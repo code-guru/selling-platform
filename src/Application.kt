@@ -1,18 +1,30 @@
 package lvls
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import entity.Ad
+import entity.User
+import helpers.initDB
+import helpers.validateAdParam
+import helpers.validateUserParam
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.application.log
 import io.ktor.features.*
-import org.slf4j.event.*
-
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.Database
+import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.jackson
+import io.ktor.request.path
+import io.ktor.routing.routing
+import lvls.helpers.responseWithError
+import org.slf4j.event.Level
+import service.AdService
+import service.UserService
+import java.util.*
 
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -23,6 +35,14 @@ fun Application.module(testing: Boolean = false) {
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
+
+            dateFormat.isLenient = true
+            registerModule(JavaTimeModule())
+            registerModule(Jdk8Module())
+            registerModule(ParameterNamesModule())
+
+            deactivateDefaultTyping()
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         }
     }
 
@@ -45,16 +65,43 @@ fun Application.module(testing: Boolean = false) {
 
     install(ConditionalHeaders)
 
-    initDB()
+    install(StatusPages) {
+        exception<BadRequestException> { cause ->
+            responseWithError(call, "BadRequest", cause.message, HttpStatusCode.BadRequest)
+        }
+
+        exception<JsonMappingException> { cause ->
+            val reference = cause.pathReference?.split(".")?.last()
+            responseWithError(
+                call, "ParsingError(${cause::class.simpleName})",
+                "The request body is either invalid or missing a required property ($reference).", HttpStatusCode.BadRequest
+            )
+        }
+
+        exception<Throwable> { cause ->
+            log.error(cause.message, cause)
+            responseWithError(
+                call,
+                "ServerError",
+                "${cause::class.simpleName}: ${cause.message}",
+                HttpStatusCode.InternalServerError
+            )
+        }
+
+        status(HttpStatusCode.NotFound) {
+            responseWithError(call, "NotFound", "The request path is not valid.", HttpStatusCode.BadRequest)
+        }
+    }
+
+    initDB(testing)
+    val userService = UserService()
+    val adService = AdService()
+
 
     routing {
-
+        serviceRouting("user", User::class, ::validateUserParam, userService)
+        serviceRouting("ad", Ad::class, ::validateAdParam, adService)
     }
 }
 
-fun initDB() {
-    val config = HikariConfig("/hikari.properties")
-    config.schema = "public"
-    val ds = HikariDataSource(config)
-    Database.connect(ds)
-}
+class InvalidRequestException(message: String) : RuntimeException(message)

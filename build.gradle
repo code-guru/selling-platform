@@ -21,6 +21,24 @@ sourceSets {
     test.resources.srcDirs = ['testresources']
 }
 
+mainClassName = "io.ktor.server.netty.EngineMain"
+archivesBaseName = 'selling-platform'
+
+jar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+}
+
+task fatJar(type: Jar) {
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}
+
 repositories {
     mavenLocal()
     jcenter()
@@ -36,7 +54,9 @@ dependencies {
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"
+
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
 
 
     implementation "com.zaxxer:HikariCP:$hikari_version"
