@@ -39,9 +39,9 @@ class AdService : ApiService<Ad> {
         return transaction {
             val query = Ads.innerJoin(Users).selectAll()
 
-            if(category != null) query.andWhere { Ads.category eq category }
-            if(fromDate != null) query.andWhere { Ads.creationDate greaterEq parseDate(fromDate) }
-            if(toDate != null) query.andWhere { Ads.creationDate lessEq parseDate(toDate) }
+            if (category != null) query.andWhere { Ads.category eq category }
+            if (fromDate != null) query.andWhere { Ads.creationDate greaterEq parseDate(fromDate) }
+            if (toDate != null) query.andWhere { Ads.creationDate lessEq parseDate(toDate) }
 
             query.map { toAdModel(it) }
         }
@@ -58,7 +58,7 @@ class AdService : ApiService<Ad> {
             Ads.insertAndGetId {
                 it[title] = entity.title
                 it[category] = entity.category
-                it[description] = entity.description?:""
+                it[description] = entity.description ?: ""
                 it[ownerId] = entity.ownerId
                 it[creationDate] = entity.creationDate!!
             }
@@ -71,7 +71,7 @@ class AdService : ApiService<Ad> {
             Ads.update({ Ads.id eq id }) {
                 it[title] = entity.title
                 it[category] = entity.category
-                it[description] = entity.description?:""
+                it[description] = entity.description ?: ""
                 it[ownerId] = entity.ownerId
                 it[creationDate] = entity.creationDate!!
             }

@@ -1,6 +1,5 @@
 package lvls
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -24,7 +23,6 @@ import lvls.helpers.responseWithError
 import org.slf4j.event.Level
 import service.AdService
 import service.UserService
-import java.util.*
 
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -73,8 +71,10 @@ fun Application.module(testing: Boolean = false) {
         exception<JsonMappingException> { cause ->
             val reference = cause.pathReference?.split(".")?.last()
             responseWithError(
-                call, "ParsingError(${cause::class.simpleName})",
-                "The request body is either invalid or missing a required property ($reference).", HttpStatusCode.BadRequest
+                call,
+                "ParsingError(${cause::class.simpleName})",
+                "The request body is either invalid or missing a required property ($reference).",
+                HttpStatusCode.BadRequest
             )
         }
 

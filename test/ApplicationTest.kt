@@ -8,7 +8,10 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import java.util.*
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class ApplicationTest {
 
@@ -21,7 +24,7 @@ class ApplicationTest {
                     """{
                         "firstName": "Tuva", 
                         "lastName": "Lindberg", 
-                        "email": "${UUID.randomUUID().toString()}@gmail.com"
+                        "email": "${UUID.randomUUID()}@gmail.com"
                     }"""
                 )
             }.apply {
@@ -43,7 +46,7 @@ class ApplicationTest {
                     """{
                         "firstName": "Tuva", 
                         "lastName": "Tirgar", 
-                        "email": "${UUID.randomUUID().toString()}@gmail.com"
+                        "email": "${UUID.randomUUID()}@gmail.com"
                     }"""
                 )
                 `Create a New User`()

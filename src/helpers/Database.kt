@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun initDB(testing: Boolean) {
     val configFileName = if (testing) "/hikari.test.properties" else "/hikari.properties"
     val config = HikariConfig(configFileName)
-    if(!testing) setDBConfigFromEnv(config)
+    if (!testing) setDBConfigFromEnv(config)
 
     val ds = HikariDataSource(config)
     Database.connect(ds)

@@ -51,6 +51,10 @@ dependencies {
 
     implementation "ch.qos.logback:logback-classic:$logback_version"
 
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.0'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.11.0'
+    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.11.0'
+
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"

@@ -1,6 +1,5 @@
 package entity
 
-import org.jetbrains.exposed.dao.ImmutableCachedEntityClass
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -9,7 +8,7 @@ import org.jetbrains.exposed.sql.`java-time`.date
 import java.time.LocalDate
 
 class AdDao(id: EntityID<Int>) : IntEntity(id) {
-   companion object : IntEntityClass<AdDao>(Ads)
+    companion object : IntEntityClass<AdDao>(Ads)
 
     var title by Ads.title
     var description by Ads.description
