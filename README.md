@@ -1,20 +1,21 @@
 # Selling-Platform
 A Kotlin demo REST API, FTW! 
 
-##Usage
+## Usage
 ```shell script
 docker-compose up
 ```
 
-##Highlights
+## Highlights
 - Stack: Kotlin, Ktor, Exposed, HikariCP, Postgres, Docker
 - API designed based on best practices using HTTP verbs, and treating data as resources
 - Validation of input from API request
 - Database connection pooling using Hikari
 - Using Exposed as ORM for communicating with DB
 - Error handling and return errors with correct HTTP status code and message and standard JSON format
+- Testing Endpoint with H2 in-memory database
 
-##Endpoint
+## Endpoint
 |　　　　　　　　　　|   |   |
 |---|---|---|
 | Create a New User |POST | http://localhost:8181/users| 
